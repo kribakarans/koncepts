@@ -1,11 +1,11 @@
-# Deploy Ktags to Github Pages
+# Deploy KBook to Github Pages
 
-name: Deploy Ktags
+name: Deploy KBook
 
 on:
-    #  # Runs on pushes targeting the default branch
-    #  push:
-    #    branches: ["master"]
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -34,24 +34,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Global
+      - name: Install KBook
         run: |
-          sudo apt-get update && \
-          sudo apt-get install -y --no-install-recommends global
+          echo "Clone KBook ..."
+          git clone https://github.com/kribakarans/kbook.git /tmp/kbook
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
 
-      - name: Build Ktags
+      - name: Build KBook
         run: |
-          $DIR_GITHUB_WORKFLOW/ktags_build_xref.sh "Programming Concepts" "https://github.com/kribakarans/concepts"
+          (
+            set -e
+
+            cd /tmp/kbook
+            echo "Install KBook ..."
+            make install
+          )
+
+          echo "Build KBook ..."
+          kbook "Koncepts" "src" "https://github.com/kribakarans/koncepts"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
-          path: ./HTML
+          path: ./src
 
   # Deployment job
   deploy:
